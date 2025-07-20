@@ -24,10 +24,10 @@ io.on('connection', (socket) => {
     });
   });
 
-  socket.on('userDisconnected', () => {
+  socket.on('userDisconnected', (user) => {
     socket.broadcast.emit('chatMessage', {
       user: 'Sistema',
-      message: `Un utente ha lasciato la chat.`,
+      message: `${user} ha lasciato la chat.`,
     });
   });
 
