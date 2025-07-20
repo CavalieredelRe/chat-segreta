@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#222" />
+  <link rel="icon" href="icon-192.png" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chat Segreta Protetta</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 1rem;
+      background: #f4f4f4;
+    }
+    #login, #chat {
+      max-width: 600px;
+      margin: auto;
+    }
+    #chat {
+      display: none;
+      flex-direction: column;
+      height: 80vh;
+    }
+    #messages {
+      flex: 1;
+      border: 1px solid #ccc;
+      padding: 1rem;
+      overflow-y: auto;
+      margin-bottom: 10px;
+      background: #fff;
+    }
+    #input-area {
+      display: flex;
+      gap: 5px;
+    }
+    #msg-input {
+      flex: 1;
+      padding: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <section id="login">
+    <h2>Login</h2>
+    <form id="login-form">
+      <input id="username" placeholder="Username" required />
+      <input id="password" type="password" placeholder="Password" required />
+      <button type="submit">Accedi</button>
+    </form>
+    <div id="login-error" style="color:red; margin-top:10px;"></div>
+  </section>
+
+  <section id="chat">
+    <div>
+      <button id="logout-btn">Esci</button>
+    </div>
+    <div id="messages"></div>
+    <div id="input-area">
+      <input id="msg-input" placeholder="Scrivi un messaggio..." />
+      <button id="send-btn">Invia</button>
+    </div>
+  </section>
+
+  <script type="module" src="client.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then(() => console.log('✅ Service Worker registrato'))
+        .catch(err => console.error('❌ Errore SW:', err));
+    }
+  </script>
+</body>
+</html>
