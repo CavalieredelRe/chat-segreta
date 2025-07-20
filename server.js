@@ -9,24 +9,29 @@ const io = new Server(server);
 
 const PORT = process.env.PORT || 3000;
 
-app.use(express.static('public'));
+// Serve file statici dalla cartella 'public'
+app.use(express.static(path.join(__dirname, 'public')));
 
+// Rotta per la homepage
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/public/index.html');
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// Traccia utenti connessi
 let onlineUsers = {};
 
 io.on("connection", (socket) => {
   let user = null;
 
+  // Quando un utente si connette
   socket.on("userConnected", (username) => {
     user = username;
     onlineUsers[user] = socket;
+    console.log(`🟢 ${user} connesso`);
   });
 
+  // Quando riceve un messaggio
   socket.on("chatMessage", (data) => {
-    // Broadcast to all users except the sender
     for (let name in onlineUsers) {
       if (name !== data.user) {
         onlineUsers[name].emit("chatMessage", data);
@@ -34,15 +39,24 @@ io.on("connection", (socket) => {
     }
   });
 
+  // Quando l'utente si disconnette manualmente
   socket.on("userDisconnected", () => {
-    if (user) delete onlineUsers[user];
+    if (user) {
+      delete onlineUsers[user];
+      console.log(`🔴 ${user} disconnesso manualmente`);
+    }
   });
 
+  // Quando la connessione viene persa
   socket.on("disconnect", () => {
-    if (user) delete onlineUsers[user];
+    if (user) {
+      delete onlineUsers[user];
+      console.log(`🔴 ${user} disconnesso`);
+    }
   });
 });
 
+// Avvia il server
 server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`🚀 Server avviato su http://localhost:${PORT}`);
 });
