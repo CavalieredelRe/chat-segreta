@@ -38,7 +38,14 @@ io.on("connection", (socket) => {
     socket.broadcast.emit("chatMessage", data);
   });
 
-  socket.on("userDisconnected", (username) => {
+  // Evento typing: inoltra a tutti gli altri utenti chi sta scrivendo
+  socket.on("typing", (isTyping) => {
+    if (user) {
+      socket.broadcast.emit("typing", { user, isTyping });
+    }
+  });
+
+  socket.on("userDisconnected", () => {
     if (user) {
       delete onlineUsers[user];
       socket.broadcast.emit("chatMessage", {
@@ -48,7 +55,7 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("disconnect", (username) => {
+  socket.on("disconnect", () => {
     if (user) {
       delete onlineUsers[user];
       socket.broadcast.emit("chatMessage", {
