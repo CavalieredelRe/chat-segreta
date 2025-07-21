@@ -9,11 +9,23 @@
   <title>Chat Segreta Protetta</title>
   <script src="/socket.io/socket.io.js"></script>
   <style>
+    :root {
+      --bg-color: #f4f4f4;
+      --text-color: #000;
+      --msg-bg: #fff;
+    }
+    body.dark {
+      --bg-color: #121212;
+      --text-color: #eee;
+      --msg-bg: #1e1e1e;
+    }
     body {
       font-family: sans-serif;
       margin: 0;
       padding: 1rem;
-      background: #f4f4f4;
+      background: var(--bg-color);
+      color: var(--text-color);
+      transition: background 0.3s, color 0.3s;
     }
     #login, #chat {
       max-width: 600px;
@@ -30,7 +42,7 @@
       padding: 1rem;
       overflow-y: auto;
       margin-bottom: 10px;
-      background: #fff;
+      background: var(--msg-bg);
     }
     #input-area {
       display: flex;
@@ -40,9 +52,22 @@
       flex: 1;
       padding: 0.5rem;
     }
+    #theme-toggle {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: #888;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
+  <button id="theme-toggle">🌙 Tema Scuro</button>
+
   <section id="login">
     <h2>Login</h2>
     <form id="login-form">
@@ -66,6 +91,25 @@
 
   <script type="module" src="client.js"></script>
   <script>
+    // Modalità Scura con localStorage
+    const toggleBtn = document.getElementById('theme-toggle');
+    const prefersDark = localStorage.getItem('darkMode') === 'true';
+
+    const setTheme = (dark) => {
+      document.body.classList.toggle('dark', dark);
+      toggleBtn.textContent = dark ? '☀️ Tema Chiaro' : '🌙 Tema Scuro';
+      localStorage.setItem('darkMode', dark);
+    };
+
+    toggleBtn.addEventListener('click', () => {
+      const dark = !document.body.classList.contains('dark');
+      setTheme(dark);
+    });
+
+    // Applica all'avvio
+    setTheme(prefersDark);
+
+    // Service Worker
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js')
         .then(() => console.log('✅ Service Worker registrato'))
